@@ -1,0 +1,14 @@
+{
+  "name": "tinyworld-root",
+  "version": "1.0.0",
+  "description": "TinyWorld — A Cozy Virtual Pet & Personal Progress MERN Application",
+  "scripts": {
+    "server": "npm run dev --prefix server",
+    "client": "npm run dev --prefix client",
+    "seed": "npm run seed --prefix server",
+    "build": "npm run build --prefix client"
+  },
+  "keywords": ["mern", "virtual-pet", "gamification", "habit-tracker"],
+  "author": "Luna & Team",
+  "license": "MIT"
+}
