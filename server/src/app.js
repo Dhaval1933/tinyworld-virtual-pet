@@ -40,6 +40,18 @@ app.get(['/api/health', '/api/v1/health'], (req, res) => {
   });
 });
 
+// ─── Database Readiness Middleware ───
+app.use('/api/v1', (req, res, next) => {
+  if (req.path === '/health') return next();
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({
+      success: false,
+      message: 'Database is connecting. If this persists, ensure 0.0.0.0/0 is added to MongoDB Atlas Network Access.',
+    });
+  }
+  next();
+});
+
 // ─── Routes ───
 app.use('/api/v1/auth', require('./routes/auth'));
 app.use('/api/v1/onboarding', require('./routes/onboarding'));
