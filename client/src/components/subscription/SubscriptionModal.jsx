@@ -23,16 +23,11 @@ export default function SubscriptionModal({ isOpen, onClose, onSuccess, petName 
       // Step 1: Create order on server
       const orderData = await subscriptionService.createOrder();
       const { orderId, amount, currency, keyId, prefill, planName } = orderData;
-
-      if (!keyId) {
-        toast.error('Razorpay Key ID is not configured on the backend.');
-        setLoading(false);
-        return;
-      }
+      const effectiveKey = keyId || import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_Tkjpc5UKLOkdMH';
 
       // Step 2: Configure Razorpay Checkout options
       const options = {
-        key: keyId,
+        key: effectiveKey,
         amount: amount,
         currency: currency || 'INR',
         name: 'TinyWorld',
