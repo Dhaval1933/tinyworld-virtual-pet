@@ -59,6 +59,19 @@ const worldSchema = new mongoose.Schema(
       type: String,
       default: 'default',
     },
+    activeScene: {
+      type: String,
+      enum: ['room', 'balcony'],
+      default: 'room',
+    },
+    balconyView: {
+      type: String,
+      default: 'sunset', // 'sunset', 'cherry-blossom', 'galaxy', 'city', 'ocean', 'rainy-garden'
+    },
+    unlockedBalconyViews: {
+      type: [String],
+      default: ['sunset'], // 'sunset' is free by default, others unlocked with coins/levels
+    },
     roomLayout: {
       type: [placedItemSchema],
       default: [],
@@ -67,6 +80,16 @@ const worldSchema = new mongoose.Schema(
           return v.length <= 30;
         },
         message: 'Room cannot have more than 30 items.',
+      },
+    },
+    balconyLayout: {
+      type: [placedItemSchema],
+      default: [],
+      validate: {
+        validator: function (v) {
+          return v.length <= 30;
+        },
+        message: 'Balcony cannot have more than 30 items.',
       },
     },
   },
