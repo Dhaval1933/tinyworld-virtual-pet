@@ -6,11 +6,11 @@ const mongoose = require('mongoose');
 let server;
 
 const start = async () => {
-  await connectDB();
-
   server = app.listen(PORT, () => {
     console.log(`🌍 TinyWorld server running on port ${PORT} [${NODE_ENV}]`);
   });
+
+  await connectDB();
 };
 
 const gracefulShutdown = (signal) => {
