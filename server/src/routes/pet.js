@@ -17,4 +17,7 @@ router.post('/pet', auth, petController.petPet);
 // POST /api/v1/pet/rest
 router.post('/rest', auth, petController.rest);
 
+// POST /api/v1/pet/chat
+router.post('/chat', auth, petController.chat);
+
 module.exports = router;
