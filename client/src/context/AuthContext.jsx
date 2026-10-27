@@ -12,6 +12,7 @@ export function AuthProvider({ children }) {
       const data = await authService.getMe();
       setUser(data.user);
     } catch {
+      localStorage.removeItem('tinyworld_token');
       setUser(null);
     } finally {
       setLoading(false);
@@ -25,19 +26,29 @@ export function AuthProvider({ children }) {
 
   const login = useCallback(async (credentials) => {
     const data = await authService.login(credentials);
+    if (data.token) {
+      localStorage.setItem('tinyworld_token', data.token);
+    }
     setUser(data.user);
     return data;
   }, []);
 
   const register = useCallback(async (formData) => {
     const data = await authService.register(formData);
+    if (data.token) {
+      localStorage.setItem('tinyworld_token', data.token);
+    }
     setUser(data.user);
     return data;
   }, []);
 
   const logout = useCallback(async () => {
-    await authService.logout();
-    setUser(null);
+    try {
+      await authService.logout();
+    } finally {
+      localStorage.removeItem('tinyworld_token');
+      setUser(null);
+    }
   }, []);
 
   const updateUser = useCallback((updatedUser) => {

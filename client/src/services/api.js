@@ -10,6 +10,15 @@ const api = axios.create({
   },
 });
 
+// Request interceptor to attach Bearer token if stored (bulletproof cross-domain auth)
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('tinyworld_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 // Response interceptor for consistent error handling
 api.interceptors.response.use(
   (response) => response.data,

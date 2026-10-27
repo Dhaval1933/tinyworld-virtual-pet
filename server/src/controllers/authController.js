@@ -15,6 +15,8 @@ const setTokenCookie = (res, userId) => {
     sameSite: COOKIE_SAME_SITE,
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
+
+  return token;
 };
 
 /**
@@ -45,10 +47,11 @@ exports.register = async (req, res, next) => {
       username: username || undefined,
     });
 
-    setTokenCookie(res, user._id);
+    const token = setTokenCookie(res, user._id);
 
     res.status(201).json({
       success: true,
+      token,
       user: user.toSafeObject(),
     });
   } catch (error) {
@@ -74,10 +77,11 @@ exports.login = async (req, res, next) => {
       throw new AppError('Invalid email or password.', 401);
     }
 
-    setTokenCookie(res, user._id);
+    const token = setTokenCookie(res, user._id);
 
     res.json({
       success: true,
+      token,
       user: user.toSafeObject(),
     });
   } catch (error) {
