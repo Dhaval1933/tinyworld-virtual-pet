@@ -8,6 +8,16 @@ Built as an individual end-term software engineering project.
 
 ---
 
+## 🔗 Live Deployment & Demonstration
+
+- **🌐 Live Web Application (Frontend)**: [https://tinyworld-virtual-pet.vercel.app](https://tinyworld-virtual-pet.vercel.app)
+- **⚙️ Live REST API (Backend)**: [https://tinyworld-backend.onrender.com](https://tinyworld-backend.onrender.com)
+- **🩺 API Health Status**: [https://tinyworld-backend.onrender.com/api/v1/health](https://tinyworld-backend.onrender.com/api/v1/health)
+- **🎥 Product Video Walkthrough**: [Watch Demo Video on Google Drive](https://drive.google.com/file/d/1Ghbwt1nUgUVGnXLmxG3jUkFwZ1Iw9tYi/view?usp=sharing)
+- **📦 GitHub Repository**: [https://github.com/Dhaval1933/tinyworld-virtual-pet](https://github.com/Dhaval1933/tinyworld-virtual-pet)
+
+---
+
 ## 📸 Core Features & Highlights
 
 - **🐾 Cozy Pet Companions**: Adopt Mochi the Cat, Pebble the Bunny, or Sprout. Interact in real-time — feed, pet, and rest your companion. Pet mood, hunger, happiness, and energy dynamically decay over time. Includes physical reactions (giggles, head pats, high-fives) and high-pitch cartoon voice mimic like Talking Tom!
