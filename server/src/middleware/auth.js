@@ -10,7 +10,10 @@ const { JWT_SECRET } = require('../config/env');
  */
 const auth = async (req, res, next) => {
   try {
-    const token = req.cookies?.token;
+    let token = req.cookies?.token;
+    if (!token && req.headers.authorization?.startsWith('Bearer ')) {
+      token = req.headers.authorization.split(' ')[1];
+    }
 
     if (!token) {
       throw new AppError('Not authenticated. Please log in.', 401);

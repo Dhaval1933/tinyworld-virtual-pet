@@ -4,6 +4,7 @@ import { useGame } from '../context/GameContext';
 import { useEffect } from 'react';
 import {
   Home,
+  Gamepad2,
   ShoppingBag,
   ListChecks,
   BarChart3,
@@ -16,6 +17,7 @@ import toast from 'react-hot-toast';
 
 const navItems = [
   { to: '/room', icon: Home, label: 'Room' },
+  { to: '/games', icon: Gamepad2, label: 'Mini Games' },
   { to: '/shop', icon: ShoppingBag, label: 'Shop' },
   { to: '/activities', icon: ListChecks, label: 'Activities' },
   { to: '/progress', icon: BarChart3, label: 'Progress' },
@@ -24,7 +26,7 @@ const navItems = [
 
 export default function AppLayout() {
   const { user, logout } = useAuth();
-  const { progress, refreshGameData } = useGame();
+  const { refreshGameData } = useGame();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,7 +35,7 @@ export default function AppLayout() {
       return;
     }
     refreshGameData();
-  }, [user]);
+  }, [user, navigate, refreshGameData]);
 
   const handleLogout = async () => {
     try {

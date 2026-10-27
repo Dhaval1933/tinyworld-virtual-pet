@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "seed": "node scripts/seed.js"
+    "seed": "node scripts/seed.js",
+    "test": "node scripts/test-auth-onboarding.js && node scripts/test-room-scene.js && node scripts/test-activity-progression.js && node scripts/test-pet-chat.js && node scripts/test-razorpay-e2e.js"
   },
   "keywords": [],
   "author": "",
@@ -23,7 +24,8 @@
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.14.1",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "razorpay": "^2.9.8"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"

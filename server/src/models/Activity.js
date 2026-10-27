@@ -10,7 +10,7 @@ const activitySchema = new mongoose.Schema(
     activityType: {
       type: String,
       required: true,
-      enum: ['reading', 'studying', 'exercise', 'hydration', 'cleaning', 'practice', 'task', 'custom'],
+      enum: ['reading', 'studying', 'exercise', 'hydration', 'cleaning', 'practice', 'task', 'custom', 'mini-game'],
     },
     title: {
       type: String,

@@ -17,6 +17,7 @@ const ACTIVITY_TYPES = [
   { type: 'cleaning',  title: 'Clean your workspace',      icon: '🧹', duration: 10 },
   { type: 'practice',  title: 'Practice a skill',          icon: '🎯', duration: 15 },
   { type: 'task',      title: 'Complete a personal task',   icon: '✅', duration: 0  },
+  { type: 'mini-game', title: 'Play Mini-Games',           icon: '🎮', duration: 5  },
 ];
 
 /**
@@ -99,11 +100,14 @@ exports.complete = async (req, res, next) => {
       await user.save();
     }
 
-    // Update pet XP
-    await Pet.findOneAndUpdate(
-      { userId },
-      { $inc: { experience: rewards.xp } }
-    );
+    // Connect successful action to Pet progression: increase XP, level up pet, cheer up (+5 happiness)
+    let pet = await Pet.findOne({ userId });
+    if (pet) {
+      pet.experience = (pet.experience || 0) + rewards.xp;
+      pet.level = getLevelFromXP(pet.experience);
+      pet.happiness = Math.min(100, (pet.happiness || 80) + 5);
+      await pet.save();
+    }
 
     // Record wallet transaction
     await WalletTransaction.create({
@@ -114,14 +118,23 @@ exports.complete = async (req, res, next) => {
       referenceId: activity._id,
     });
 
+    // Check & unlock any newly earned achievements (e.g. first_activity, activities_completed, level_reached)
+    const { checkAchievements } = require('../utils/achievementChecker');
+    const unlockedAchievements = await checkAchievements(userId);
+
+    // Re-fetch user if achievement awarded coins
+    const finalUser = unlockedAchievements.length > 0 ? await User.findById(userId) : user;
+
     res.status(201).json({
       success: true,
       activity,
       rewards,
-      newBalance: user.coins,
-      newTotalXP: user.totalXP,
+      newBalance: finalUser.coins,
+      newTotalXP: finalUser.totalXP,
       leveledUp,
-      newLevel: user.level,
+      newLevel: finalUser.level,
+      pet,
+      unlockedAchievements,
       message: `Great job! +${rewards.coins} coins, +${rewards.xp} XP 🎉`,
     });
   } catch (error) {

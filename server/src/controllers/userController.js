@@ -36,3 +36,35 @@ exports.updateProfile = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * PATCH /api/v1/users/change-password
+ */
+exports.changePassword = async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      throw new AppError('Current password and new password are required.', 400);
+    }
+
+    if (newPassword.length < 8) {
+      throw new AppError('New password must be at least 8 characters long.', 400);
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) throw new AppError('User not found.', 404);
+
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      throw new AppError('Current password is incorrect.', 401);
+    }
+
+    user.passwordHash = newPassword;
+    await user.save();
+
+    res.json({ success: true, message: 'Password updated successfully! 🔒' });
+  } catch (error) {
+    next(error);
+  }
+};

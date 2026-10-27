@@ -17,12 +17,22 @@ export const petService = {
   feed: () => api.post('/pet/feed'),
   pet: () => api.post('/pet/pet'),
   rest: () => api.post('/pet/rest'),
+  chat: (message, history = []) => api.post('/pet/chat', { message, history }),
 };
 
 export const worldService = {
   getWorld: () => api.get('/world'),
-  updateLayout: (roomLayout) => api.patch('/world/layout', { roomLayout }),
+  updateLayout: (layoutData, scene = 'room') => {
+    if (layoutData && (layoutData.roomLayout || layoutData.balconyLayout)) {
+      return api.patch('/world/layout', layoutData);
+    }
+    return api.patch('/world/layout', {
+      [scene === 'balcony' ? 'balconyLayout' : 'roomLayout']: layoutData,
+      scene,
+    });
+  },
   updateTheme: (data) => api.patch('/world/theme', data),
+  unlockBalconyView: (viewId) => api.post('/world/unlock-balcony-view', { viewId }),
 };
 
 export const shopService = {
@@ -45,4 +55,12 @@ export const progressService = {
 
 export const userService = {
   updateProfile: (data) => api.patch('/users/me', data),
+  changePassword: (data) => api.patch('/users/change-password', data),
 };
+
+export const subscriptionService = {
+  createOrder: () => api.post('/subscription/create-order'),
+  verifyPayment: (data) => api.post('/subscription/verify-payment', data),
+  getStatus: () => api.get('/subscription/status'),
+};
+

@@ -1,4 +1,5 @@
 const rateLimit = require('express-rate-limit');
+const { NODE_ENV } = require('../config/env');
 
 /**
  * Rate limiter for auth endpoints.
@@ -6,7 +7,7 @@ const rateLimit = require('express-rate-limit');
  */
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 20,                   // 20 requests per window
+  max: NODE_ENV === 'production' ? 20 : 500, // Generous during development & automated test suites
   message: {
     success: false,
     message: 'Too many requests. Please try again in 15 minutes.',

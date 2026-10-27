@@ -31,9 +31,14 @@ graph TD
             P_Login["pages/LoginPage.jsx<br/>(Sign in form)"]
             P_Register["pages/RegisterPage.jsx<br/>(Sign up form)"]
             P_Onboard["pages/OnboardingPage.jsx<br/>(Pet Adoption & Room Theme)"]
-            P_Room["pages/GameRoomPage.jsx<br/>(Room Canvas, Pet Care, Drag & Drop)"]
+            P_Room["pages/GameRoomPage.jsx<br/>(Room Canvas, Pet Care, Controls)"]
+            P_RoomScene["components/room/RoomScene.jsx<br/>(2D Engine, Drag & Drop, Depth)"]
+            P_RoomIllustrations["components/room/RoomIllustrations.jsx<br/>(Cozy SVG Graphics)"]
+            P_PetAvatar["components/room/PetAvatar.jsx<br/>(Animated Pets & Expressions)"]
+            P_RoomInv["components/room/RoomInventoryDrawer.jsx<br/>(Category Tabs & Placement)"]
             P_Shop["pages/ShopPage.jsx<br/>(Catalog, Category tabs, Buy flow)"]
             P_Activities["pages/ActivitiesPage.jsx<br/>(Habit list, Custom modal, Daily stats)"]
+            P_FocusTimer["components/activities/FocusTimer.jsx<br/>(Focus sprint timer, Circular SVG, Sound)"]
             P_Progress["pages/ProgressPage.jsx<br/>(Level XP bar, Achievements grid)"]
             P_Settings["pages/SettingsPage.jsx<br/>(Profile, Password, Audio toggles)"]
         end
@@ -82,6 +87,10 @@ graph TD
             C_Act["controllers/activityController.js"]
             C_Prog["controllers/progressController.js"]
             C_Users["controllers/userController.js"]
+        end
+
+        subgraph Utilities ["Core Game Utilities"]
+            U_AchCheck["utils/achievementChecker.js<br/>(Server-authoritative badge unlocks, bonuses, wallet ledger)"]
         end
 
         subgraph Models ["Mongoose Models"]
@@ -179,11 +188,16 @@ graph TD
 | **`AppLayout.jsx`** | `AuthContext`, `GameContext` | None | Desktop sticky sidebar (user avatar, coin count, level) + mobile bottom tab bar; triggers `refreshGameData()` on mount. |
 | **`AuthContext.jsx`** | None | `authService` | Holds `user`, `loading`, provides `login()`, `register()`, `logout()`, `updateUser()`. Auto-checks `/auth/me` on initial boot. |
 | **`GameContext.jsx`** | `AuthContext` | `petService`, `shopService`, `progressService` | Holds `pet`, `inventory`, `progress`; provides refetch functions for all game state across pages. |
-| **`RoomContext.jsx`** | None | `worldService` | Holds `world`, `editMode`, `selectedItem`; debounces `updateLayout()` by 1,000ms before sending coordinates to backend. |
-| **`GameRoomPage.jsx`** | `AuthContext`, `GameContext`, `RoomContext` | `petService` | Renders room canvas (h-340 to h-420px), draggable furniture objects, pet interaction buttons (Feed, Pet, Rest), Rotate, Remove, and inventory drawer. |
-| **`ActivitiesPage.jsx`**| `AuthContext`, `GameContext` | `activityService` | Displays daily progress meter, habit cards (Done buttons), activity history, and **Custom Activity Modal** with categories. |
-| **`ShopPage.jsx`** | `AuthContext`, `GameContext` | `shopService` | Category filter tabs, item cards with rarity badges, coin balance, and purchase confirmation with duplicate prevention. |
-| **`ProgressPage.jsx`** | `AuthContext`, `GameContext` | `progressService` | Shows Level XP progress bar, total stats (coins earned, items placed, habits completed), and unlocked achievement badges. |
+| **`RoomContext.jsx`** | None | `worldService` | Holds `world`, `editMode`, `selectedItem`, `undo()`, `cancelEdit()`, `saveAndExit()`, `rotateItem()`, `changeLayer()`, `removeItem()`. Debounces layout saves to backend. |
+| **`GameRoomPage.jsx`** | `AuthContext`, `GameContext`, `RoomContext` | `petService` | Coordinates HUD, 2D RoomScene, RoomInventoryDrawer, Edit mode toolbar (Undo, Save, Cancel), and pet care vitals. |
+| **`RoomScene.jsx`** | None | None | 2D game canvas with themed wallpaper, baseboard, animated scenic window, perspective floor planks, pointer-based drag & drop, bounds clamping, 45° rotation, dynamic Y/layer depth sorting, and floating action pill. |
+| **`RoomIllustrations.jsx`** | None | None | Scalable cozy SVG illustrations for all furniture, plants, rugs, lamps, bookshelves, desks, and wall decor. |
+| **`PetAvatar.jsx`** | None | None | Animated SVG companions (Mochi the Cat, Pebble the Bunny, Sprout) with idle breathing, happy hearts, eating, and sleepy Zzz expressions with overhead speech bubbles. |
+| **`RoomInventoryDrawer.jsx`** | None | None | Slide-out drawer with category tabs (All, Furniture, Plants, Decor), illustration previews, placed vs owned counts, and 1-click placement. |
+| **`ActivitiesPage.jsx`**| `AuthContext`, `GameContext` | `activityService` | Displays daily progress meter, habit cards (Done buttons), focus sprint timer integration, activity history, and **Custom Activity Modal** with categories. |
+| **`FocusTimer.jsx`** | None | None | Pomodoro & focus sprint countdown timer with 15/25/45m presets, circular SVG progress ring, pause/resume/reset, audio chimes, and automatic activity reward logging on completion. |
+| **`ShopPage.jsx`** | `AuthContext`, `GameContext` | `shopService` | Category filter tabs, item cards with vector SVG illustrations, rarity tags, level locks, coin balance, and purchase confirmation with duplicate prevention. |
+| **`ProgressPage.jsx`** | `AuthContext`, `GameContext` | `progressService` | Shows Level XP progress bar, player level stats, unlocked achievement badges showcase, and real-time wallet transaction ledger. |
 | **`SettingsPage.jsx`** | `AuthContext` | `userService` | Change display name, update password with current password verification, and audio/notification preferences. |
 
 ---
@@ -278,7 +292,11 @@ erDiagram
         ObjectId _id
         ObjectId userId
         String roomTheme
+        String activeScene
+        String balconyView
+        Array unlockedBalconyViews
         Array roomLayout
+        Array balconyLayout
     }
 
     ShopItem {
@@ -318,3 +336,14 @@ When modifying the project:
    - Update the schema field in Section 5 (ER Diagram).
 4. **Changing Environment Keys**:
    - Update Section 4 (Environment Variables Specification).
+
+---
+
+## 7. Automated Test Suites & Verification Coverage
+
+| Test Suite Script | Tests / Assertions | Scope & Invariants Verified |
+| :--- | :--- | :--- |
+| **`server/scripts/test-auth-onboarding.js`** | **40 / 40 PASS** | Registration validation, bcrypt 12-round hashing, HTTP-only JWT cookies, protected route 401s, onboarding pet creation, room initialization, starter inventory, duplicate onboarding guard, user data isolation, logout session termination, and password change flow verification. |
+| **`server/scripts/test-room-scene.js`** | **31 / 31 PASS** | Room access authentication, starter room verification, normalized coordinate clamping (`0 <= x,y <= 1`), rotation angle persistence, inventory ownership checks (403 for unowned items), max 30-item capacity limit, and room theme customization. |
+| **`server/scripts/test-activity-progression.js`**| **44 / 44 PASS** | Server-authoritative rewards (`ACTIVITY_REWARDS`), idempotency duplicate completion prevention (`idempotencyKey`), daily goal meter and 10/day limits, pet XP/level/happiness boosts, level progression formula, shop catalog level locks (403), insufficient coin checks (400), duplicate item prevention (409), wallet transaction ledger (`earn` & `spend`), automatic achievement unlocks with coin bonuses, and multi-user data isolation. |
+| **Total Automated Coverage** | **115 / 115 PASS** | Complete end-to-end API and business logic coverage (`npm test`). |

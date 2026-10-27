@@ -20,4 +20,8 @@ module.exports = {
   CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:5173',
   COOKIE_SECURE: process.env.COOKIE_SECURE === 'true',
   COOKIE_SAME_SITE: process.env.COOKIE_SAME_SITE || 'lax',
+  GROQ_API_KEY: process.env.GROQ_API_KEY || '',
+  RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || '',
+  RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET || '',
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
 };

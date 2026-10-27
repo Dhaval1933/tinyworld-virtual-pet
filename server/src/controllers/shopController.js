@@ -102,10 +102,18 @@ exports.purchase = async (req, res, next) => {
       reason: `Purchased ${shopItem.name}`,
     });
 
+    // Check & unlock achievements (e.g. first_purchase, items_owned)
+    const { checkAchievements } = require('../utils/achievementChecker');
+    const unlockedAchievements = await checkAchievements(userId);
+
+    // Re-fetch balance if achievement awarded coins
+    const finalUser = unlockedAchievements.length > 0 ? await User.findById(userId) : result;
+
     res.json({
       success: true,
       item: shopItem,
-      newBalance: result.coins,
+      newBalance: finalUser.coins,
+      unlockedAchievements,
       message: `You bought ${shopItem.name}! 🛍️`,
     });
   } catch (error) {

@@ -41,6 +41,7 @@ module.exports = {
     practice:  { coins: 15, xp: 20 },
     task:      { coins: 10, xp: 15 },
     custom:    { coins: 10, xp: 10 },
+    'mini-game': { coins: 25, xp: 30 },
   },
 
   // Pet species
@@ -51,4 +52,14 @@ module.exports = {
 
   // Item categories
   ITEM_CATEGORIES: ['furniture', 'plants', 'decorations', 'wallpaper', 'flooring', 'food'],
+
+  // Balcony views: 'sunset' is free, others are unlockable with level and coins
+  BALCONY_VIEWS: {
+    sunset: { name: 'Sunset Horizon', cost: 0, levelReq: 1, free: true },
+    'cherry-blossom': { name: 'Cherry Blossom Grove', cost: 100, levelReq: 2 },
+    ocean: { name: 'Ocean Breeze', cost: 150, levelReq: 2 },
+    'rainy-garden': { name: 'Rainy Garden', cost: 200, levelReq: 3 },
+    city: { name: 'Night Cityscape', cost: 250, levelReq: 3 },
+    galaxy: { name: 'Cosmic Galaxy', cost: 350, levelReq: 4 },
+  },
 };

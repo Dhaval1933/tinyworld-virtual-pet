@@ -7,11 +7,6 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Check session on mount
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
   const checkAuth = async () => {
     try {
       const data = await authService.getMe();
@@ -22,6 +17,11 @@ export function AuthProvider({ children }) {
       setLoading(false);
     }
   };
+
+  // Check session on mount
+  useEffect(() => {
+    checkAuth();
+  }, []);
 
   const login = useCallback(async (credentials) => {
     const data = await authService.login(credentials);

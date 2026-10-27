@@ -39,22 +39,34 @@ exports.complete = async (req, res, next) => {
       name: petName.trim(),
     });
 
-    // Create world
-    const world = await World.create({
-      userId,
-      roomTheme: theme,
-    });
-
     // Give starter items
     const starterItems = ['small-wooden-bed', 'round-rug', 'potted-plant'];
     const inventoryOps = starterItems.map((itemId) =>
       Inventory.findOneAndUpdate(
         { userId, itemId },
         { userId, itemId, quantity: 1, acquiredAt: new Date() },
-        { upsert: true, new: true }
+        { upsert: true, returnDocument: 'after' }
       )
     );
     await Promise.all(inventoryOps);
+
+    // Create starter room with items placed in cozy positions
+    const starterLayout = [
+      { placementId: `bed-${userId}`, itemId: 'small-wooden-bed', x: 0.22, y: 0.62, rotation: 0, layer: 1 },
+      { placementId: `rug-${userId}`, itemId: 'round-rug', x: 0.50, y: 0.72, rotation: 0, layer: 0 },
+      { placementId: `plant-${userId}`, itemId: 'potted-plant', x: 0.80, y: 0.58, rotation: 0, layer: 1 },
+    ];
+
+    // Create world with starter layout
+    const world = await World.create({
+      userId,
+      roomTheme: theme,
+      roomLayout: starterLayout,
+      balconyLayout: [],
+      unlockedBalconyViews: ['sunset'],
+      balconyView: 'sunset',
+      activeScene: 'room',
+    });
 
     // Update user
     await User.findByIdAndUpdate(userId, {

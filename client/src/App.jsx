@@ -16,6 +16,7 @@ import ShopPage from './pages/ShopPage';
 import ActivitiesPage from './pages/ActivitiesPage';
 import ProgressPage from './pages/ProgressPage';
 import SettingsPage from './pages/SettingsPage';
+import MiniGamesPage from './pages/MiniGamesPage';
 
 /**
  * Protected route wrapper — redirects to login if not authenticated.
@@ -83,6 +84,7 @@ export default function App() {
         }
       >
         <Route path="/room" element={<GameRoomPage />} />
+        <Route path="/games" element={<MiniGamesPage />} />
         <Route path="/shop" element={<ShopPage />} />
         <Route path="/activities" element={<ActivitiesPage />} />
         <Route path="/progress" element={<ProgressPage />} />

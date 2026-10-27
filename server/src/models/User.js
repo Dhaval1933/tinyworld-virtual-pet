@@ -51,6 +51,29 @@ const userSchema = new mongoose.Schema(
       default: 1,
       min: 1,
     },
+    subscription: {
+      status: {
+        type: String,
+        enum: ['none', 'active', 'expired'],
+        default: 'none',
+      },
+      plan: {
+        type: String,
+        default: 'none',
+      },
+      currentPeriodEnd: {
+        type: Date,
+        default: null,
+      },
+      razorpayPaymentId: {
+        type: String,
+        default: null,
+      },
+      razorpayOrderId: {
+        type: String,
+        default: null,
+      },
+    },
   },
   {
     timestamps: true,
@@ -74,12 +97,25 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
 };
 
 /**
+ * Check if user has an active AI conversation subscription pass.
+ */
+userSchema.methods.hasActiveAiSubscription = function () {
+  return (
+    this.subscription &&
+    this.subscription.status === 'active' &&
+    this.subscription.currentPeriodEnd &&
+    new Date(this.subscription.currentPeriodEnd) > new Date()
+  );
+};
+
+/**
  * Return user data without sensitive fields.
  */
 userSchema.methods.toSafeObject = function () {
   const obj = this.toObject();
   delete obj.passwordHash;
   delete obj.__v;
+  obj.hasAiSubscription = this.hasActiveAiSubscription();
   return obj;
 };
 

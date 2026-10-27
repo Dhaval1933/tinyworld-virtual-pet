@@ -92,6 +92,8 @@ exports.logout = (req, res) => {
   res.cookie('token', '', {
     httpOnly: true,
     expires: new Date(0),
+    secure: COOKIE_SECURE || NODE_ENV === 'production',
+    sameSite: COOKIE_SAME_SITE,
   });
   res.json({ success: true, message: 'Logged out successfully.' });
 };
